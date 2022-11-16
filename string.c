@@ -1,129 +1,75 @@
 #include "shell.h"
 
 /**
- * stringdup - function to return pointer to string (duplicate string)
- * @str: string to duplicate
- * Return: pointer to string or NULL if failure to allocate
- */
-char *stringdup(const char *str)
-{
-	int i, j;
-
-	char *ptr;
-
-	if (str == NULL)
-		return (NULL);
-
-	for (i = 0; str[i] != '\0'; i++)
-	;
-
-	ptr = malloc(sizeof(char) * (i + 1));
-
-	if (!ptr)
-		return (NULL);
-
-	for (j = 0; j < i; j++)
-		ptr[j] = str[j];
-
-	return (ptr);
-}
-/**
- * _strlen - This function returns the length of a string
- * @s: Variable that contains a character array to be counted
- * Return: Length of the string
+ * _strlen - returns the length of a string
+ * @s: the string whose length to check
+ *
+ * Return: integer length of string
  */
 int _strlen(char *s)
 {
-	int i;
+	int i = 0;
 
-	for (i = 0; s[i] != '\0'; i++)
-		continue;
+	if (!s)
+		return (0);
 
+	while (*s++)
+		i++;
 	return (i);
 }
+
 /**
- * str_comp - compare two strings
- * @arr: array of string pointers
- * @size: size of the array
- * Return: 0 on success, -1 on failure
+ * _strcmp - performs lexicogarphic comparison of two strangs.
+ * @s1: the first strang
+ * @s2: the second strang
+ *
+ * Return: negative if s1 < s2, positive if s1 > s2, zero if s1 == s2
  */
-int str_comp(char **arr, int size)
+int _strcmp(char *s1, char *s2)
 {
-	char *command[4] = {"exit", "env", ".", NULL};
-	char *ptr = arr[0];
-
-	int i = 0, j = 0, flag = 0;
-
-	if (size != 1)
-		return (-1);
-
-	if (!ptr)
-		return (1);
-
-	while (command[i] != NULL)
+	while (*s1 && *s2)
 	{
-		j = 0;
-		while (command[i][j] == ptr[j])
-		{
-			if (command[i][j] == '\0' || ptr[j] == '\0')
-				break;
-			j++;
-		}
-		if (command[i][j] == ptr[j])
-			return(flag);
-		i++;
-		flag++;
+		if (*s1 != *s2)
+			return (*s1 - *s2);
+		s1++;
+		s2++;
 	}
-
-	return (-1);
+	if (*s1 == *s2)
+		return (0);
+	else
+		return (*s1 < *s2 ? -1 : 1);
 }
+
 /**
- * str_concat - concatenates two strings
- * The returned pointer points to a newly allocated space in memory
- * which contains the contents.
+ * starts_with - checks if needle starts with haystack
+ * @haystack: string to search
+ * @needle: the substring to find
  *
- * @s1: string to be modified.
- * @s2: string to be appended.
- * @flag: integer flag for handling path or error function
- * ls: linked_string (after concatenate).
- *
- * Return: char.
+ * Return: address of next char of haystack or NULL
  */
-char *str_concat(char *s1, char *s2, int flag)
+char *starts_with(const char *haystack, const char *needle)
 {
-	int len1 = 0, len2 = 0, i, j;
-
-	char *ptr;
-
-	if (s1 == NULL)
-	{
-		s1 = malloc(sizeof(char));
-		if (s1 == NULL)
+	while (*needle)
+		if (*needle++ != *haystack++)
 			return (NULL);
-		*s1 = '\0';
-	}
-	if (s2 == NULL)
-	{
-		s2 = malloc(sizeof(char));
-		if (s2 == NULL)
-			return (NULL);
-		*s2 = '\0';
-	}
-	while (s1[len1] != '\0')
-		len1++;
-	while (s2[len2] != '\0')
-		len2++;
-	ptr = malloc(sizeof(char) * (len1 + len2 + 1 + flag));
-	if (ptr == NULL)
-		return (NULL);
-	for (i = 0 ; s1[i] != '\0' ; i++)
-		ptr[i] = s1[i];
-	if (flag == 1)
-	{
-		ptr[i] = '/';
-		i++;
-	}
-	for (j = 0 ; j < (len2 + 1) ; j++, i++)
-		ptr[i] = s2[j];
-	return (ptr);
+	return ((char *)haystack);
+}
+
+/**
+ * _strcat - concatenates two strings
+ * @dest: the destination buffer
+ * @src: the source buffer
+ *
+ * Return: pointer to destination buffer
+ */
+char *_strcat(char *dest, char *src)
+{
+	char *ret = dest;
+
+	while (*dest)
+		dest++;
+	while (*src)
+		*dest++ = *src++;
+	*dest = *src;
+	return (ret);
 }
