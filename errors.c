@@ -1,95 +1,85 @@
 #include "shell.h"
 
 /**
- * _itoa - converts int to string
- * @n: integer given
- * Return: new string
+ *_eputs - prints an input string
+ * @str: the string to be printed
+ * Return: Nothing
  */
 
-char *_itoa(int n)
+void _eputs(char *str)
 {
-	long x;
-	int count, adjust;
-	char *string;
+	int i = 0;
 
-	/* creating space for max/min int character string */
-	string = malloc(sizeof(char) * 12);
-	/* if string passed is NULL, return NULL */
-	if (string == NULL)
-		return (NULL);
-	x = n;
-	count = 0;
-	if (x < 0)
+	if (!str)
+		return;
+	while (str[i] != '\0')
 	{
-		string[count++] = '-';
-		x = x * -1;
+		_eputchar(str[i]);
+		i++;
 	}
-		if (x > 9)
-		{
-		adjust = 10;
-		while (x / adjust >= 10)
-			adjust = adjust * 10;
-		string[count++] = ((x / adjust) + '0');
-		while (adjust >= 10)
-		{
-		adjust = adjust / 10;
-		string[count++] = (((x / adjust) % 10)  + '0');
-		}
+}
+
+/**
+ * _eputchar - writes the character c to stderr
+ * @c: The character to print
+ * Return: On success 1.
+ * On error, -1 is returned, and errno is set appropriately.
+ */
+
+int _eputchar(char c)
+{
+	static int i;
+	static char buf[WRITE_BUF_SIZE];
+
+	if (c == BUF_FLUSH || i >= WRITE_BUF_SIZE)
+	{
+		write(2, buf, i);
+		i = 0;
 	}
-	else
-		string[count++] = x + '0';
-	string[count] = 0;
-	return (string);
+	if (c != BUF_FLUSH)
+		buf[i++] = c;
+	return (1);
 }
 
 /**
- * error - function returns custom error messages
- * @str: the argument at index 0
- * @line: line count from getline function
- * @flag: determines which error message to output
+ * _putfd - writes the character c to given fd
+ * @c: The character to print
+ * @fd: The filedescriptor to write to
+ * Return: On success 1.
+ * On error, -1 is returned, and errno is set appropriately.
  */
 
-void error(char *str, int line, int flag)
+int _putfd(char c, int fd)
 {
-	char *line_counter = NULL;
-	char *shell = _getenv("_");
+	static int i;
+	static char buf[WRITE_BUF_SIZE];
 
-	line_counter = _itoa(line);
-	write(STDERR_FILENO, shell, _strlen(shell));
-	write(STDERR_FILENO, ": ", 2);
-	write(STDERR_FILENO, line_counter, _strlen(line_counter));
-	write(STDERR_FILENO, ": ", 2);
-	write(STDERR_FILENO, str, _strlen(str));
-	if (flag == 0)
-		write(STDERR_FILENO, ": not found\n", 13);
-	else if (flag == 1)
-		perror(" ");
-	free(line_counter);
+	if (c == BUF_FLUSH || i >= WRITE_BUF_SIZE)
+	{
+		write(fd, buf, i);
+		i = 0;
+	}
+	if (c != BUF_FLUSH)
+		buf[i++] = c;
+	return (1);
 }
 
 /**
- * get_pid - function to return process ID of the calling process
- * Return: pid
+ *_putsfd - prints an input string
+ * @str: the string to be printed
+ * @fd: the filedescriptor to write to
+ * Return: the number of chars put
  */
 
-unsigned int get_pid(void)
+int _putsfd(char *str, int fd)
 {
-	unsigned int pid;
+	int i = 0;
 
-	pid = getpid();
-	return (pid);
-}
-
-/**
- * get_ppid - function to return parent process ID
- * of the calling process
- * Return: ppid
- */
-
-unsigned int get_ppid(void)
-{
-	unsigned int ppid;
-
-	ppid = getppid();
-	return (ppid);
+	if (!str)
+		return (0);
+	while (*str)
+	{
+		i += _putfd(*str++, fd);
+	}
+	return (i);
 }
